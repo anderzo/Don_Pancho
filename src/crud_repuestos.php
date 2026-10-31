@@ -18,13 +18,24 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
     }
     if($accion === 'crear'){
         $repo->insertar(
-            (string)($_POST['categoria_id']) ?? '',
+            (int)($_POST['categoria_id']) ?? 0,
             (string)($_POST['nombre'])?? '',
             (string)($_POST['descripcion'])?? '',
             (float)($_POST['precio'])?? 0,
             (int)($_POST['stock'])?? 0,
             (string)($_POST['fotografia'])?? '',
             (string)($_POST['insignia'])?? '');
+        header("Location: crud_repuestos.php");
+        exit;
+    }
+    if($accion === 'actualizar'){
+        $repo->actualizar(
+            (int)($_POST['id'] ?? 0),
+            (float)($_POST['precio'] ?? 0),
+            (int)($_POST['stock'] ?? 0),
+            (string)($_POST['insignia'] ?? '')
+        );
+
         header("Location: crud_repuestos.php");
         exit;
     }    
@@ -37,7 +48,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Productos</title>
+    <title>Lista Repuestos</title>
 </head>
 <body>
     <button type="button" id="btncrear">Insertar Producto</button>
@@ -69,6 +80,16 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
                     <input type="hidden" name="id" value="<?=$p['id']?>">
                     <button type="submit">Eliminar</button>
                 </form>
+                <button 
+                    type="button"
+                    class="btnEditar"
+                    data-id="<?= $p['id'] ?>"
+                    data-precio="<?= $p['precio'] ?>"
+                    data-stock="<?= $p['stock'] ?>"
+                    data-insignia="<?= htmlspecialchars($p['insignia'], ENT_QUOTES, 'UTF-8') ?>"
+                >
+                    Editar
+                </button>
             </td>
         </tr>
         <?php endforeach ?>
@@ -90,11 +111,45 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
             <label>Fotografia</label>
             <input type="string" name="fotografia"><br>
             <label>Insignia</label>
-            <input type="string" name="insignia"><br>
+            <select name="insignia" required>
+                <option value="Destacado">Destacado</option>
+                <option value="NoDestacado" selected>No Destacado</option>
+            </select>
             <button type="submit">Guardar</button>
             <button type="button" onclick="document.getElementById('modalCrear').close();"></button>
         </form>
 
+    </dialog>
+    <dialog id="modalEditar">
+        <h2>Actualizar Repuesto</h2>
+
+        <form method="POST" action="crud_repuestos.php">
+
+            <input type="hidden" name="action" value="actualizar">
+            <input type="hidden" name="id" id="editarId">
+
+            <label>Precio</label>
+            <input type="number" name="precio" id="editarPrecio" min="0" required>
+            <br>
+
+            <label>Stock</label>
+            <input type="number" name="stock" id="editarStock" min="0" required>
+            <br>
+
+            <label>Insignia</label>
+            <select name="insignia" id="editarInsignia" required>
+                <option value="Destacado">Destacado</option>
+                <option value="NoDestacado" selected>No Destacado</option>
+            </select>
+            <br>
+
+            <button type="submit">Guardar Cambios</button>
+
+            <button type="button" onclick="document.getElementById('modalEditar').close();">
+                Cancelar
+            </button>
+
+        </form>
     </dialog>
 </body>
 </html>
@@ -103,4 +158,26 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
     document.getElementById('btncrear').addEventListener('click',()=>{
         modalCrear.showModal();
     })
+
+    const modalEditar = document.getElementById('modalEditar');
+
+    const botonesEditar = document.querySelectorAll('.btnEditar');
+
+    botonesEditar.forEach(boton => {
+
+        boton.addEventListener('click', () => {
+
+            document.getElementById('editarId').value = boton.dataset.id;
+
+            document.getElementById('editarPrecio').value = boton.dataset.precio;
+
+            document.getElementById('editarStock').value = boton.dataset.stock;
+
+            document.getElementById('editarInsignia').value = boton.dataset.insignia;
+
+            modalEditar.showModal();
+
+        });
+
+    });
 </script>
