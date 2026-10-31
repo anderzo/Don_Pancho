@@ -19,7 +19,7 @@ class Repuesto{
         return $stmt->execute([':id'=>$id]);
     }
 
-    public function insertar(string $categoria_id, string $nombre, string $descripcion, float $precio, int $stock, string $fotografia, string $insignia): int{
+    public function insertar(int $categoria_id, string $nombre, string $descripcion, float $precio, int $stock, string $fotografia, string $insignia): int{
         $sql = "INSERT INTO repuestos(categoria_id, nombre, descripcion, precio, stock, fotografia, insignia)
         VALUES (:categoria_id,:nombre,:descripcion,:precio,:stock,:fotografia,:insignia)";
         $stmt = $this->pdo->prepare($sql);
@@ -33,6 +33,19 @@ class Repuesto{
             ':insignia'=>$insignia
         ]);
         return (int)$this->pdo->lastInsertId();
+    }
+
+    public function actualizar(int $id, float $nuevoPrecio, int $nuevoStock, string $nuevaInsignia): bool {
+        $sql = "UPDATE repuestos 
+                SET precio = :prec, stock = :stk, insignia = :nuevaInsignia
+                WHERE id = :id";
+        $stmt = $this->pdo->prepare($sql);
+        return $stmt->execute([
+            ':prec' => $nuevoPrecio,
+            ':stk'  => $nuevoStock,
+            ':nuevaInsignia'=> $nuevaInsignia,
+            ':id'   => $id
+        ]);
     }
 }
 ?>
