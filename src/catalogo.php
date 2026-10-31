@@ -1,6 +1,8 @@
-
 <?php
 require __DIR__ . '/conexiones/conexionPDO.php';
+
+$conexion = new ConexionBD();
+$pdo = $conexion->conectar();
 
 try {
     $repuestos = $pdo->query(
