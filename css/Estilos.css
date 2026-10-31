@@ -1,0 +1,390 @@
+
+/* =====================================
+   ESTILOS GENERALES
+===================================== */
+
+body {
+    font-family: Arial, sans-serif;
+    color: #252525;
+    background-color: #ffffff;
+}
+
+a {
+    text-decoration: none;
+}
+
+
+/* =====================================
+   NAVEGACIÓN
+===================================== */
+
+.navbar-donpancho {
+    background-color: #171719;
+    padding: 15px 0;
+}
+
+.navbar-brand {
+    font-size: 23px;
+    letter-spacing: 1px;
+}
+
+.navbar-brand span,
+.footer-donpancho h4 span {
+    color: #c5a15b;
+}
+
+.navbar-donpancho .nav-link {
+    color: white;
+    margin-left: 8px;
+    transition: color .2s;
+}
+
+.navbar-donpancho .nav-link:hover,
+.navbar-donpancho .nav-link.active {
+    color: #c5a15b;
+}
+
+
+/* =====================================
+   BOTONES
+===================================== */
+
+.btn-vino {
+    background-color: #681d2d;
+    color: white;
+    border: 1px solid #681d2d;
+}
+
+.btn-vino:hover {
+    background-color: #481320;
+    border-color: #481320;
+    color: white;
+}
+
+.btn-outline-vino {
+    color: #681d2d;
+    border: 1px solid #681d2d;
+}
+
+.btn-outline-vino:hover {
+    background-color: #681d2d;
+    color: white;
+}
+
+
+/* =====================================
+   TITULOS Y TEXTOS
+===================================== */
+
+.subtitulo {
+    display: block;
+    color: #b18c4e;
+    font-size: 12px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+}
+
+.titulo-seccion {
+    color: #681d2d;
+    font-weight: bold;
+}
+
+.texto-seccion {
+    color: #777777;
+}
+
+
+/* =====================================
+   BANNER PRINCIPAL
+===================================== */
+
+.hero {
+    background:
+        linear-gradient(rgba(0,0,0,.65), rgba(0,0,0,.65)),
+        url("../img/hero-autopartes.jpg") center/cover no-repeat;
+
+    color: white;
+    text-align: center;
+    padding: 115px 15px;
+}
+
+.hero-etiqueta {
+    color: #c5a15b;
+    font-size: 13px;
+    font-weight: bold;
+    letter-spacing: 3px;
+}
+
+.hero h1 {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: bold;
+    margin-top: 15px;
+}
+
+.hero h1 span {
+    color: #c5a15b;
+}
+
+.hero p {
+    max-width: 650px;
+    margin: 15px auto;
+}
+
+
+/* =====================================
+   TARJETAS DE PRODUCTOS
+===================================== */
+
+.producto-card {
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: transform .2s, box-shadow .2s;
+}
+
+.producto-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,.10);
+}
+
+.producto-imagen {
+    background-color: #f8f7f5;
+    padding: 12px;
+    text-align: center;
+}
+
+.producto-imagen img {
+    width: 100%;
+    height: 190px;
+    object-fit: contain;
+}
+
+.producto-placeholder {
+    height: 190px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 55px;
+    color: #c5a15b;
+    background-color: #f8f7f5;
+}
+
+.producto-card .card-title {
+    color: #252525;
+    font-weight: bold;
+}
+
+.categoria-producto {
+    color: #888888;
+}
+
+.precio {
+    color: #681d2d;
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.badge-vino,
+.badge-categoria {
+    background-color: #681d2d;
+    color: white;
+    width: fit-content;
+}
+
+.insignia-producto {
+    color: #b18c4e;
+    font-weight: bold;
+}
+
+
+/* =====================================
+   DISPONIBILIDAD DE PRODUCTOS
+===================================== */
+
+.disponible {
+    color: #198754;
+}
+
+.agotado {
+    color: #dc3545;
+}
+
+
+/* =====================================
+   SECCIÓN DE MARCAS
+===================================== */
+
+.seccion-marcas {
+    background-color: #f5f2ed;
+}
+
+.marca-item {
+    background-color: white;
+    border: 1px solid #e3ded5;
+    border-radius: 8px;
+    padding: 20px 10px;
+    font-weight: bold;
+    color: #681d2d;
+    transition: background-color .2s, color .2s;
+}
+
+.marca-item:hover {
+    background-color: #681d2d;
+    color: white;
+}
+
+
+/* =====================================
+   SUCURSALES
+===================================== */
+
+.sucursal-card {
+    background-color: white;
+    border: 1px solid #e3ded5;
+    border-radius: 8px;
+    padding: 25px 20px;
+    transition: transform .2s, box-shadow .2s;
+}
+
+.sucursal-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 16px rgba(0,0,0,.08);
+}
+
+.sucursal-card h5 {
+    color: #681d2d;
+    font-weight: bold;
+}
+
+.sucursal-card p {
+    color: #777777;
+}
+
+.icono-sucursal {
+    color: #c5a15b;
+    font-size: 25px;
+    margin-bottom: 10px;
+}
+
+
+/* =====================================
+   ENCABEZADO DEL CATÁLOGO
+===================================== */
+
+.catalogo-header {
+    background-color: #f5f2ed;
+    text-align: center;
+    padding: 60px 15px;
+}
+
+.catalogo-header h1 {
+    color: #681d2d;
+    font-weight: bold;
+    font-size: clamp(2rem, 5vw, 3rem);
+}
+
+.catalogo-header p {
+    color: #777777;
+}
+
+
+/* =====================================
+   PIE DE PÁGINA
+===================================== */
+
+.footer-donpancho {
+    background-color: #171719;
+    color: white;
+    padding: 45px 15px 20px;
+    margin-top: 25px;
+}
+
+.footer-donpancho h4 {
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.footer-donpancho h5 {
+    color: #c5a15b;
+    font-size: 17px;
+    margin-bottom: 15px;
+}
+
+.footer-donpancho p {
+    color: #cccccc;
+}
+
+.footer-sucursal {
+    font-size: 13px;
+    margin-bottom: 10px;
+}
+
+.footer-links {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-links li {
+    margin-bottom: 9px;
+}
+
+.footer-links a,
+.redes a {
+    color: #cccccc;
+    transition: color .2s;
+}
+
+.footer-links a:hover,
+.redes a:hover {
+    color: #c5a15b;
+}
+
+.redes {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.footer-divider {
+    border-color: #666666;
+    margin: 30px 0 20px;
+}
+
+.footer-donpancho small {
+    color: #aaaaaa;
+}
+
+
+/* =====================================
+   DISEÑO RESPONSIVE
+===================================== */
+
+@media (max-width: 576px) {
+
+    .hero {
+        padding: 80px 15px;
+    }
+
+    .hero-etiqueta {
+        letter-spacing: 2px;
+    }
+
+    .producto-imagen img {
+        height: 175px;
+    }
+
+    .catalogo-header {
+        padding: 40px 15px;
+    }
+
+    .footer-donpancho {
+        text-align: center;
+    }
+
+    .redes {
+        align-items: center;
+    }
+
+}
