@@ -3,11 +3,11 @@ require __DIR__ . '/conexiones/conexionPDO.php';
 
 try {
     $repuestos = $pdo->query(
-        "SELECT r.id, c.nombre AS categoria, r.nombre, r.descripcion,
-                r.precio, r.stock, r.insignia
-         FROM repuestos r
-         JOIN categorias c ON c.id = r.categoria_id"
-    )->fetchAll();
+        "SELECT r.id, c.nombre AS categoria, r.nombre, r.descripcion, r.precio, r.stock, r.insignia
+         FROM repuestos r JOIN categorias c ON c.id = r.categoria_id" )->fetchAll();
+
+    $sucursales = $pdo->query("SELECT nombre, direccion FROM sucursales")->fetchAll();
+
 } catch (PDOException $e) {
     die("Error en la consulta: " . $e->getMessage());
 }
@@ -19,6 +19,14 @@ try {
     <title>Repuestos</title>
 </head>
 <body>
+    <nav>
+        <a href="index.php">Repuestos</a> |
+        <a href="categorias.php">Categorías</a> |
+        <a href="sucursales.php">Sucursales</a> |
+        <a href="facturas.php">Facturas</a> |
+        <a href="usuarios.php">Usuarios</a>
+    </nav>
+
     <h1>Repuestos</h1>
     <table border="1">
         <tr>
@@ -42,5 +50,14 @@ try {
         </tr>
         <?php endforeach; ?>
     </table>
+
+    <footer>
+        <h3>Don Pancho</h3>
+        <?php foreach ($sucursales as $s): ?>
+            <p>
+                <strong><?= ($s['nombre']) ?>:</strong> <?=($s['direccion']) ?>
+            </p>
+        <?php endforeach; ?>
+    </footer>
 </body>
 </html>
