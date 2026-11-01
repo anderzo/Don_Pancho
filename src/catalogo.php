@@ -276,9 +276,15 @@ if (is_array($usuarioSesion)) {
                     <a class="nav-link" href="sucursales.php">
 
                         Sucursales
-
                     </a>
 
+                </li>
+
+                <li class="nav-item">
+
+                    <a class="nav-link" href="historial.php">
+                        Historial
+                    </a>
                 </li>
 
 
@@ -762,6 +768,17 @@ if (is_array($usuarioSesion)) {
                         </a>
 
                     </li>
+
+                    <li>
+
+                        <a href="historial.php">
+
+                            Historial de compras
+
+                        </a>
+
+                    </li>
+
 
                 </ul>
 

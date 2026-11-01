@@ -1,4 +1,3 @@
-
 /* =====================================
    ESTILOS GENERALES
 ===================================== */
@@ -385,6 +384,190 @@ a {
 
     .redes {
         align-items: center;
+    }
+
+}
+
+/* =====================================
+   HISTORIAL DE COMPRAS
+===================================== */
+
+.historial-header {
+    background-color: #f5f2ed;
+    padding: 50px 15px;
+    text-align: center;
+}
+
+.historial-header h1 {
+    color: #681d2d;
+    font-weight: bold;
+}
+
+.historial-contenido {
+    padding: 45px 15px;
+}
+
+.historial-busqueda {
+    background-color: white;
+    border: 1px solid #e3ded5;
+    border-radius: 8px;
+    padding: 25px;
+    box-shadow: 0 3px 10px rgba(0,0,0,.05);
+}
+
+.historial-busqueda label {
+    font-weight: bold;
+    color: #681d2d;
+}
+
+.historial-factura {
+    border: 1px solid #e3ded5;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 25px;
+}
+
+.historial-factura .card-header {
+    background-color: #681d2d;
+    color: white;
+    padding: 15px 20px;
+}
+
+.historial-factura .card-body {
+    padding: 25px;
+}
+
+.historial-factura h5 {
+    color: #681d2d;
+    font-weight: bold;
+}
+
+.historial-total {
+    color: #681d2d;
+    font-weight: bold;
+}
+
+.historial-tabla thead {
+    background-color: #f5f2ed;
+    color: #681d2d;
+}
+
+.historial-tabla th {
+    font-weight: bold;
+}
+
+.historial-tabla td,
+.historial-tabla th {
+    padding: 12px;
+}
+
+.historial-boton {
+    background-color: #681d2d;
+    color: white;
+    border: 1px solid #681d2d;
+}
+
+.historial-boton:hover {
+    background-color: #481320;
+    color: white;
+}
+
+/* =========================================
+   ESTILOS DE FACTURACION
+========================================= */
+
+.facturacion-seccion {
+    background: #ffffff;
+    border: 1px solid #e3ded5;
+    border-radius: 10px;
+    padding: 30px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.04);
+}
+
+.facturacion-seccion .form-label {
+    color: #252525;
+    font-weight: 600;
+}
+
+.facturacion-seccion .form-control,
+.facturacion-seccion .form-select {
+    border: 1px solid #ddd8d0;
+    padding: 11px 13px;
+}
+
+.facturacion-seccion .form-control:focus,
+.facturacion-seccion .form-select:focus {
+    border-color: #b18c4e;
+    box-shadow: 0 0 0 0.2rem rgba(177, 140, 78, 0.15);
+}
+
+.facturacion-producto {
+    background: #faf9f7;
+    border: 1px solid #e3ded5;
+    border-radius: 8px;
+    padding: 18px;
+}
+
+.facturacion-producto h5 {
+    color: #681d2d;
+    font-size: 17px;
+    margin-bottom: 10px;
+}
+
+.facturacion-cantidad {
+    width: 105px;
+    flex-shrink: 0;
+}
+
+.facturacion-cantidad .form-control {
+    text-align: center;
+}
+
+.facturacion-resumen {
+    background: #f5f2ed;
+    border: 1px solid #e3ded5;
+    border-radius: 10px;
+    padding: 30px;
+}
+
+.resumen-linea {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    margin-bottom: 14px;
+    color: #555;
+}
+
+.resumen-linea strong {
+    color: #252525;
+}
+
+.resumen-total {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    color: #681d2d;
+    font-size: 21px;
+    font-weight: bold;
+}
+
+@media (max-width: 576px) {
+
+    .facturacion-seccion,
+    .facturacion-resumen {
+        padding: 20px;
+    }
+
+    .facturacion-producto {
+        padding: 14px;
+    }
+
+    .facturacion-cantidad {
+        width: 90px;
+    }
+
+    .resumen-total {
+        font-size: 18px;
     }
 
 }

@@ -1,20 +1,34 @@
 <?php
+session_start();
+
 require_once __DIR__ . '/conexiones/conexionPDO.php';
 require_once __DIR__ . '/factura.php';
 
-// Crear el objeto Factura
+/* =========================================
+   FUNCION PARA PROTEGER LA SALIDA HTML
+========================================= */
+function e($valor) {
+    return htmlspecialchars((string)($valor ?? ''), ENT_QUOTES, 'UTF-8');
+}
+
+/* =========================================
+   CONSULTAR REPUESTOS Y SUCURSALES
+========================================= */
 $factura = new Factura($pdo);
 
-// Consultar repuestos y sucursales
 $repuestos = $factura->listarRepuestos();
 $sucursales = $factura->listarSucursales();
 
-// Variables para mensajes
+/* =========================================
+   VARIABLES PARA MENSAJES
+========================================= */
 $mensaje = "";
 $tipoMensaje = "";
 $numeroFactura = "";
 
-// Procesar el formulario
+/* =========================================
+   PROCESAR FORMULARIO
+========================================= */
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     try {
@@ -24,9 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $sucursalId = (int)($_POST['sucursal_id'] ?? 0);
         $tipoFlete = $_POST['tipo_flete'] ?? '';
 
-        // Obtener productos seleccionados
         $productos = [];
-
         $productosRecibidos = $_POST['productos'] ?? [];
 
         if (!is_array($productosRecibidos)) {
@@ -56,7 +68,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
 
-        // Guardar factura y obtener su número
         $numeroFactura = $factura->guardarFactura(
             $rtn,
             $telefono,
@@ -68,7 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $mensaje = "¡Factura generada correctamente!";
         $tipoMensaje = "success";
 
-        // Actualizar existencias
+        // Actualizar existencias después de la compra
         $repuestos = $factura->listarRepuestos();
 
     } catch (Throwable $e) {
@@ -77,6 +88,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $tipoMensaje = "error";
     }
 }
+
+/* =========================================
+   CONTROL DE SESION
+========================================= */
+$usuarioSesion = $_SESSION['usuario'] ?? $_SESSION['user'] ?? null;
+$logueado = !empty($usuarioSesion);
+
+$nombreUsuario = '';
+$rolUsuario = '';
+
+if (is_array($usuarioSesion)) {
+
+    $nombreUsuario = $usuarioSesion['nombre']
+        ?? $usuarioSesion['usuario']
+        ?? $usuarioSesion['username']
+        ?? 'Usuario';
+
+    $rolUsuario = $usuarioSesion['rol']
+        ?? $usuarioSesion['role']
+        ?? '';
+
+} elseif (is_string($usuarioSesion)) {
+
+    $nombreUsuario = $usuarioSesion;
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -84,9 +121,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <head>
     <meta charset="UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Facturación SAR - Don Pancho</title>
+    <title>Facturación - Don Pancho</title>
 
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
@@ -98,72 +136,223 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <body>
 
-<div class="container py-5">
+<!-- =========================================
+     BARRA DE NAVEGACION
+========================================= -->
 
-    <h1 class="mb-4">Facturación SAR</h1>
+<nav class="navbar navbar-expand-lg navbar-dark navbar-donpancho">
+
+    <div class="container">
+
+        <a class="navbar-brand fw-bold" href="index.php">
+            DON <span>PANCHO</span>
+        </a>
+
+        <button
+            class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#menuPrincipal"
+            aria-controls="menuPrincipal"
+            aria-expanded="false"
+            aria-label="Mostrar menú"
+        >
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="menuPrincipal">
+
+            <ul class="navbar-nav ms-auto align-items-lg-center">
+
+                <li class="nav-item">
+                    <a class="nav-link" href="index.php">Inicio</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="catalogo.php">Catálogo</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="kit.php">Arma tu Kit</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link active" href="facturacion.php">Facturación</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="sucursales.php">Sucursales</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="historial.php">Historial</a>
+                </li>
+
+                <?php if ($logueado): ?>
+
+                    <li class="nav-item ms-lg-3">
+                        <span class="nav-link">
+                            <?= e($nombreUsuario) ?>
+
+                            <?php if ($rolUsuario !== ''): ?>
+                                (<?= e($rolUsuario) ?>)
+                            <?php endif; ?>
+                        </span>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="logout.php">
+                            Cerrar sesión
+                        </a>
+                    </li>
+
+                <?php else: ?>
+
+                    <li class="nav-item ms-lg-3">
+                        <a class="nav-link" href="login.php">
+                            Iniciar sesión
+                        </a>
+                    </li>
+
+                <?php endif; ?>
+
+            </ul>
+
+        </div>
+
+    </div>
+
+</nav>
+
+
+<!-- =========================================
+     ENCABEZADO
+========================================= -->
+
+<header class="catalogo-header">
+
+    <div class="container">
+
+        <span class="subtitulo">
+            DON PANCHO
+        </span>
+
+        <h1 class="titulo-seccion mt-2">
+            Facturación
+        </h1>
+
+        <p class="texto-seccion">
+            Registra tus compras, selecciona tus repuestos
+            y consulta el total de tu factura.
+        </p>
+
+    </div>
+
+</header>
+
+
+<!-- =========================================
+     CONTENIDO DE FACTURACION
+========================================= -->
+
+<main class="container py-5">
 
     <?php if ($mensaje !== ""): ?>
 
-        <div class="alert alert-<?= $tipoMensaje === 'success' ? 'success' : 'danger' ?>">
+        <div class="alert alert-<?= $tipoMensaje === 'success' ? 'success' : 'danger' ?> mb-4">
 
-            <?= htmlspecialchars($mensaje, ENT_QUOTES, 'UTF-8') ?>
+            <?= e($mensaje) ?>
 
             <?php if ($numeroFactura !== ""): ?>
+
                 <br>
+
                 <strong>Número de factura:</strong>
-                <?= htmlspecialchars($numeroFactura, ENT_QUOTES, 'UTF-8') ?>
+                <?= e($numeroFactura) ?>
+
             <?php endif; ?>
 
         </div>
 
     <?php endif; ?>
 
+
     <form method="POST" action="">
 
-        <h2 class="mb-3">Datos del cliente</h2>
+        <!-- DATOS DEL CLIENTE -->
 
-        <div class="mb-3">
+        <div class="facturacion-seccion mb-4">
 
-            <label for="rtn" class="form-label">RTN:</label>
+            <span class="subtitulo">INFORMACIÓN DEL CLIENTE</span>
 
-            <input
-                type="text"
-                class="form-control"
-                id="rtn"
-                name="rtn"
-                maxlength="14"
-                pattern="[0-9]{14}"
-                inputmode="numeric"
-                placeholder="Ingrese los 14 dígitos"
-                required
-            >
+            <h2 class="titulo-seccion mt-2 mb-4">
+                Datos del cliente
+            </h2>
+
+            <div class="row g-3">
+
+                <div class="col-md-6">
+
+                    <label for="rtn" class="form-label">
+                        RTN
+                    </label>
+
+                    <input
+                        type="text"
+                        class="form-control"
+                        id="rtn"
+                        name="rtn"
+                        maxlength="14"
+                        pattern="[0-9]{14}"
+                        inputmode="numeric"
+                        placeholder="Ingrese los 14 dígitos"
+                        required
+                    >
+
+                </div>
+
+                <div class="col-md-6">
+
+                    <label for="telefono" class="form-label">
+                        Teléfono
+                    </label>
+
+                    <input
+                        type="text"
+                        class="form-control"
+                        id="telefono"
+                        name="telefono"
+                        maxlength="8"
+                        pattern="[2389][0-9]{7}"
+                        inputmode="numeric"
+                        placeholder="Ejemplo: 98765432"
+                        required
+                    >
+
+                </div>
+
+            </div>
 
         </div>
 
-        <div class="mb-3">
 
-            <label for="telefono" class="form-label">Teléfono:</label>
+        <!-- SELECCIONAR SUCURSAL -->
 
-            <input
-                type="text"
-                class="form-control"
-                id="telefono"
-                name="telefono"
-                maxlength="8"
-                pattern="[2389][0-9]{7}"
-                inputmode="numeric"
-                placeholder="Ejemplo: 98765432"
-                required
-            >
+        <div class="facturacion-seccion mb-4">
 
-        </div>
+            <span class="subtitulo">PUNTO DE ATENCIÓN</span>
 
-        <h2 class="mb-3">Seleccionar sucursal</h2>
+            <h2 class="titulo-seccion mt-2 mb-4">
+                Seleccionar sucursal
+            </h2>
 
-        <div class="mb-3">
+            <label for="sucursal_id" class="form-label">
+                Sucursal donde se realiza la compra
+            </label>
 
             <select
                 name="sucursal_id"
+                id="sucursal_id"
                 class="form-select"
                 required
             >
@@ -174,18 +363,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     <option value="<?= (int)$sucursal['id'] ?>">
 
-                        <?= htmlspecialchars(
-                            $sucursal['nombre'],
-                            ENT_QUOTES,
-                            'UTF-8'
-                        ) ?>
-
-                        -
-                        <?= htmlspecialchars(
-                            $sucursal['direccion'],
-                            ENT_QUOTES,
-                            'UTF-8'
-                        ) ?>
+                        <?= e($sucursal['nombre']) ?>
+                        - <?= e($sucursal['direccion']) ?>
 
                     </option>
 
@@ -195,74 +374,109 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         </div>
 
-        <h2 class="mb-3">Seleccionar repuestos</h2>
 
-        <?php if (empty($repuestos)): ?>
+        <!-- SELECCIONAR REPUESTOS -->
 
-            <p>No hay repuestos disponibles en inventario.</p>
+        <div class="facturacion-seccion mb-4">
 
-        <?php else: ?>
+            <span class="subtitulo">PRODUCTOS DISPONIBLES</span>
 
-            <?php foreach ($repuestos as $repuesto): ?>
+            <h2 class="titulo-seccion mt-2 mb-2">
+                Seleccionar repuestos
+            </h2>
 
-                <div class="row align-items-center mb-3">
+            <p class="texto-seccion mb-4">
+                Indica la cantidad de cada repuesto que deseas comprar.
+            </p>
 
-                    <div class="col-md-8">
+            <?php if (empty($repuestos)): ?>
 
-                        <label
-                            for="producto_<?= (int)$repuesto['id'] ?>"
-                            class="form-label"
-                        >
+                <div class="alert alert-warning">
+                    No hay repuestos disponibles en inventario.
+                </div>
 
-                            <strong>
-                                <?= htmlspecialchars(
-                                    $repuesto['nombre'],
-                                    ENT_QUOTES,
-                                    'UTF-8'
-                                ) ?>
-                            </strong>
+            <?php else: ?>
 
-                            - L.
-                            <?= number_format(
-                                (float)$repuesto['precio'],
-                                2
-                            ) ?>
+                <div class="row g-3">
 
-                            (Disponibles:
-                            <?= (int)$repuesto['stock'] ?>)
+                    <?php foreach ($repuestos as $repuesto): ?>
 
-                        </label>
+                        <div class="col-md-6">
 
-                    </div>
+                            <div class="facturacion-producto h-100">
 
-                    <div class="col-md-4">
+                                <div class="d-flex justify-content-between align-items-start gap-3">
 
-                        <input
-                            type="number"
-                            class="form-control cantidad-producto"
-                            id="producto_<?= (int)$repuesto['id'] ?>"
-                            name="productos[<?= (int)$repuesto['id'] ?>]"
-                            min="0"
-                            max="<?= (int)$repuesto['stock'] ?>"
-                            value="0"
-                            data-precio="<?= htmlspecialchars(
-                                (string)$repuesto['precio'],
-                                ENT_QUOTES,
-                                'UTF-8'
-                            ) ?>"
-                        >
+                                    <div>
 
-                    </div>
+                                        <h5>
+                                            <?= e($repuesto['nombre']) ?>
+                                        </h5>
+
+                                        <p class="mb-1">
+                                            Precio:
+                                            <strong>
+                                                L. <?= number_format((float)$repuesto['precio'], 2) ?>
+                                            </strong>
+                                        </p>
+
+                                        <small class="text-muted">
+                                            Disponibles:
+                                            <?= (int)$repuesto['stock'] ?>
+                                        </small>
+
+                                    </div>
+
+                                    <div class="facturacion-cantidad">
+
+                                        <label
+                                            for="producto_<?= (int)$repuesto['id'] ?>"
+                                            class="form-label"
+                                        >
+                                            Cantidad
+                                        </label>
+
+                                        <input
+                                            type="number"
+                                            class="form-control cantidad-producto"
+                                            id="producto_<?= (int)$repuesto['id'] ?>"
+                                            name="productos[<?= (int)$repuesto['id'] ?>]"
+                                            min="0"
+                                            max="<?= (int)$repuesto['stock'] ?>"
+                                            value="0"
+                                            data-precio="<?= e($repuesto['precio']) ?>"
+                                        >
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    <?php endforeach; ?>
 
                 </div>
 
-            <?php endforeach; ?>
+            <?php endif; ?>
 
-        <?php endif; ?>
+        </div>
 
-        <h2 class="mb-3">Tipo de flete</h2>
 
-        <div class="mb-4">
+        <!-- TIPO DE FLETE -->
+
+        <div class="facturacion-seccion mb-4">
+
+            <span class="subtitulo">ENTREGA DE COMPRA</span>
+
+            <h2 class="titulo-seccion mt-2 mb-4">
+                Tipo de flete
+            </h2>
+
+            <label for="tipo_flete" class="form-label">
+                Selecciona cómo deseas recibir tus productos
+            </label>
 
             <select
                 name="tipo_flete"
@@ -289,54 +503,184 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         </div>
 
-        <h2 class="mb-3">Resumen de compra</h2>
 
-        <div class="card p-3 mb-4">
+        <!-- RESUMEN DE COMPRA -->
 
-            <p>
-                Subtotal:
+        <div class="facturacion-resumen mb-4">
+
+            <span class="subtitulo">DETALLE DE PAGO</span>
+
+            <h2 class="titulo-seccion mt-2 mb-4">
+                Resumen de compra
+            </h2>
+
+            <div class="resumen-linea">
+                <span>Subtotal:</span>
                 <strong id="subtotal">L. 0.00</strong>
-            </p>
+            </div>
 
-            <p>
-                Descuento:
+            <div class="resumen-linea">
+                <span>Descuento:</span>
                 <strong id="descuento">L. 0.00</strong>
-            </p>
+            </div>
 
-            <p>
-                ISV (15%):
+            <div class="resumen-linea">
+                <span>ISV (15%):</span>
                 <strong id="isv">L. 0.00</strong>
-            </p>
+            </div>
 
-            <p>
-                Flete:
+            <div class="resumen-linea">
+                <span>Flete:</span>
                 <strong id="flete">L. 0.00</strong>
-            </p>
+            </div>
 
             <hr>
 
-            <h4>
-                Total a pagar:
-                <span id="total">L. 0.00</span>
-            </h4>
+            <div class="resumen-total">
+                <span>Total a pagar:</span>
+                <strong id="total">L. 0.00</strong>
+            </div>
 
-            <small class="text-muted">
-                El descuento se aplica al comprar 10 unidades o más.
+            <small class="text-muted d-block mt-3">
+                El descuento del 10% se aplica al comprar 10 unidades o más.
             </small>
 
         </div>
 
-        <button
-            type="submit"
-            class="btn btn-primary"
-            name="generar_factura"
-        >
-            Generar factura
-        </button>
+
+        <!-- BOTON -->
+
+        <div class="text-center">
+
+            <button
+                type="submit"
+                class="btn btn-vino btn-lg px-5"
+                name="generar_factura"
+            >
+                Generar factura
+            </button>
+
+        </div>
 
     </form>
 
-</div>
+</main>
+
+
+<!-- =========================================
+     FOOTER
+========================================= -->
+
+<footer class="footer-donpancho">
+
+    <div class="container">
+
+        <div class="row g-4">
+
+            <div class="col-md-4">
+
+                <h4>
+                    DON <span>PANCHO</span>
+                </h4>
+
+                <p>
+                    Autopartes y repuestos genuinos y compatibles
+                    para mantener tu vehículo en las mejores condiciones.
+                </p>
+
+            </div>
+
+
+            <div class="col-md-3">
+
+                <h5>Enlaces rápidos</h5>
+
+                <ul class="footer-links">
+
+                    <li><a href="index.php">Inicio</a></li>
+                    <li><a href="catalogo.php">Catálogo</a></li>
+                    <li><a href="kit.php">Arma tu Kit</a></li>
+                    <li><a href="facturacion.php">Facturación</a></li>
+                    <li><a href="sucursales.php">Sucursales</a></li>
+                    <li><a href="historial.php">Historial de compras</a></li>
+
+                </ul>
+
+            </div>
+
+
+            <div class="col-md-5">
+
+                <h5>Nuestras direcciones</h5>
+
+                <ul class="footer-links">
+
+                    <li>
+                        <strong>Tegucigalpa:</strong>
+                        Toncontín y Suyapa.
+                    </li>
+
+                    <li>
+                        <strong>San Pedro Sula:</strong>
+                        Medina.
+                    </li>
+
+                    <li>
+                        <strong>La Ceiba:</strong>
+                        Carretera CA-13.
+                    </li>
+
+                </ul>
+
+            </div>
+
+        </div>
+
+
+        <hr class="footer-divider">
+
+
+        <div class="text-center mb-3">
+
+            <h5>Síguenos</h5>
+
+            <div class="redes">
+
+                <a href="https://www.facebook.com/"
+                target="_blank" rel="noopener noreferrer">
+                    Facebook
+                </a>
+
+                <a href="https://www.instagram.com/"
+                target="_blank" rel="noopener noreferrer">
+                    Instagram
+                </a>
+
+                <a href="https://www.whatsapp.com/"
+                target="_blank" rel="noopener noreferrer">
+                    WhatsApp
+                </a>
+
+            </div>
+
+
+        <div class="text-center">
+
+            <small>
+                &copy; <?= date('Y') ?> Don Pancho.
+                Todos los derechos reservados.
+            </small>
+
+        </div>
+
+    </div>
+
+</footer>
+
+
+<!-- =========================================
+     CALCULO DEL RESUMEN
+========================================= -->
 
 <script>
 
@@ -419,6 +763,8 @@ selectorFlete.addEventListener('change', calcularResumen);
 calcularResumen();
 
 </script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>

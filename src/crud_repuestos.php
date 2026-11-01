@@ -16,66 +16,17 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
         header("Location: crud_repuestos.php");
         exit;
     }
-
     if($accion === 'crear'){
-
-        $archivo = $_FILES['fotografia'];
-
-        if($archivo['error'] !== UPLOAD_ERR_OK){
-            die("Error al recibir la fotografía. Código: " . $archivo['error']);
-        }
-
-        $maxBytes = 4 * 1024 * 1024;
-
-        if($archivo['size'] > $maxBytes){
-            die("Error: La fotografía supera los 4 MB.");
-        }
-
-        $extension = strtolower(pathinfo($archivo['name'], PATHINFO_EXTENSION));
-
-        $extensionesPermitidas = ['jpg', 'jpeg', 'png', 'webp'];
-
-        if(!in_array($extension, $extensionesPermitidas, true)){
-            die("Error: Extensión de imagen no permitida.");
-        }
-
-        $finfo = new finfo(FILEINFO_MIME_TYPE);
-        $mimeReal = $finfo->file($archivo['tmp_name']);
-
-        $mimesValidos = ['image/jpeg', 'image/png', 'image/webp'];
-
-        if(!in_array($mimeReal, $mimesValidos, true)){
-            die("Error: El archivo no es una imagen válida.");
-        }
-
-        $nuevoNombre = uniqid('prod_', true) . '.' . $extension;
-
-        $carpetaDestino = __DIR__ . '/../img/';
-
-        if(!is_dir($carpetaDestino)){
-            mkdir($carpetaDestino, 0755, true);
-        }
-
-        $rutaFinal = $carpetaDestino . $nuevoNombre;
-
-        if(move_uploaded_file($archivo['tmp_name'], $rutaFinal)){
-
-            $repo->insertar(
-                (int)($_POST['categoria_id'] ?? 0),
-                (string)($_POST['nombre'] ?? ''),
-                (string)($_POST['descripcion'] ?? ''),
-                (float)($_POST['precio'] ?? 0),
-                (int)($_POST['stock'] ?? 0),
-                $nuevoNombre,
-                (string)($_POST['insignia'] ?? '')
-            );
-
-            header("Location: crud_repuestos.php");
-            exit;
-
-        }else{
-            die("Error al guardar la fotografía.");
-        }
+        $repo->insertar(
+            (int)($_POST['categoria_id']) ?? 0,
+            (string)($_POST['nombre'])?? '',
+            (string)($_POST['descripcion'])?? '',
+            (float)($_POST['precio'])?? 0,
+            (int)($_POST['stock'])?? 0,
+            (string)($_POST['fotografia'])?? '',
+            (string)($_POST['insignia'])?? '');
+        header("Location: crud_repuestos.php");
+        exit;
     }
     if($accion === 'actualizar'){
         $repo->actualizar(
@@ -119,13 +70,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
             <td><?= ($p['nombre']) ?></td>
             <td><?= ($p['categoria_id']) ?></td>
             <td><?= ($p['descripcion']) ?></td>
-            <td>
-                <img 
-                    src="../img/<?= htmlspecialchars($p['fotografia'], ENT_QUOTES, 'UTF-8') ?>"
-                    width="100"
-                    alt="Fotografía del producto"
-                >
-            </td>
+            <td><?= ($p['fotografia']) ?></td>
             <td><?= ($p['precio']) ?></td>
             <td><?= ($p['stock']) ?></td>
             <td><?= ($p['insignia']) ?></td>
@@ -151,7 +96,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
     </table>
     <dialog id="modalCrear">
         <h2>Registrar Repuesto</h2>
-        <form method="POST" action="crud_repuestos.php" enctype="multipart/form-data">
+        <form method="POST" action="crud_repuestos.php">
             <input type="hidden" name="action" value="crear">
             <label>Nombre</label>
             <input type="text" name="nombre"><br>
@@ -164,7 +109,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
             <label>Stock</label>
             <input type="number" name="stock"><br>
             <label>Fotografia</label>
-            <input type="file" name="fotografia" accept="image/jpeg, image/png, image/webp" required>
+            <input type="string" name="fotografia"><br>
             <label>Insignia</label>
             <select name="insignia" required>
                 <option value="Destacado">Destacado</option>

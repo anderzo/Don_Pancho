@@ -1,4 +1,3 @@
-
 <?php
 session_start();
 
@@ -186,6 +185,12 @@ if (is_array($usuarioSesion)) {
                 <li class="nav-item">
                     <a class="nav-link" href="sucursales.php">
                         Sucursales
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="historial.php">
+                        Historial
                     </a>
                 </li>
 
@@ -563,6 +568,10 @@ if (is_array($usuarioSesion)) {
                         <a href="sucursales.php">Sucursales</a>
                     </li>
 
+                    <li>
+                        <a href="historial.php">Historial de compras</a>
+                    </li>
+
                 </ul>
 
             </div>
@@ -611,15 +620,18 @@ if (is_array($usuarioSesion)) {
 
             <div class="redes">
 
-                <a href="#" aria-label="Facebook">
+                <a href="https://www.facebook.com/"
+                target="_blank" rel="noopener noreferrer">
                     Facebook
                 </a>
 
-                <a href="#" aria-label="Instagram">
+                <a href="https://www.instagram.com/"
+                target="_blank" rel="noopener noreferrer">
                     Instagram
                 </a>
 
-                <a href="#" aria-label="WhatsApp">
+                <a href="https://www.whatsapp.com/"
+                target="_blank" rel="noopener noreferrer">
                     WhatsApp
                 </a>
 
