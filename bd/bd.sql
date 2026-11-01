@@ -2,7 +2,7 @@ CREATE DATABASE IF NOT EXISTS Don_Pancho;
 USE Don_Pancho;
 
 CREATE USER IF NOT EXISTS 'GrupoProgra'@'localhost' IDENTIFIED BY 'PrograWeb123';
-GRANT ALL ON don_pancho.* TO 'GrupoProgra'@'localhost';
+GRANT ALL ON Don_Pancho.* TO 'GrupoProgra'@'localhost';
 FLUSH PRIVILEGES;
 
 create table categorias (
@@ -34,7 +34,7 @@ create table usuarios (
     usuario varchar(50) not null,
     password varchar(255) not null,
     telefono varchar(20) not null,
-    rol enum('admin', 'bodeguero') not null default 'bodeguero',
+    rol enum('usuario', 'admin', 'bodeguero') not null default 'usuario',
     estado enum('activo', 'inactivo') not null default 'activo',
     sucursal_id int null,
     constraint uq_usuarios_usuario unique (usuario),

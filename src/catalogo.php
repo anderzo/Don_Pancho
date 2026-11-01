@@ -4,52 +4,113 @@ require __DIR__ . '/conexiones/conexionPDO.php';
 $conexion = new ConexionBD();
 $pdo = $conexion->conectar();
 
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+/* =========================================
+   FUNCION DE SEGURIDAD HTML
+========================================= */
+
+function e($valor) {
+    return htmlspecialchars(
+        (string)$valor,
+        ENT_QUOTES,
+        'UTF-8'
+    );
+}
+
+/* =========================================
+   CONSULTAR REPUESTOS
+========================================= */
+
+$repuestos = [];
+$categorias = [];
+$errorProductos = false;
+
 try {
-    $repuestos = $pdo->query(
-        "SELECT r.id, c.nombre AS categoria, r.nombre, r.descripcion,
-                r.precio, r.stock, r.insignia, r.fotografia
-         FROM repuestos r
-         JOIN categorias c ON c.id = r.categoria_id"
-    )->fetchAll();
+
+    $sql = "SELECT
+                r.id,
+                c.nombre AS categoria,
+                r.nombre,
+                r.descripcion,
+                r.precio,
+                r.stock,
+                r.insignia,
+                r.fotografia
+            FROM repuestos r
+            INNER JOIN categorias c
+                ON c.id = r.categoria_id
+            ORDER BY c.nombre ASC, r.nombre ASC";
+
+    $consulta = $pdo->query($sql);
+
+    $repuestos = $consulta->fetchAll(PDO::FETCH_ASSOC);
 
     $sucursales = $pdo->query(
         "SELECT nombre, direccion FROM sucursales"
     )->fetchAll();
 
-} catch (PDOException $e) {
-    die("Error en la consulta: " . $e->getMessage());
+    /* =====================================
+       OBTENER CATEGORIAS DISPONIBLES
+    ===================================== */
+
+    foreach ($repuestos as $r) {
+
+        $categorias[$r['categoria']] = $r['categoria'];
+
+    }
+
+} catch (PDOException $ex) {
+
+    $errorProductos = true;
+
 }
 
-function e($valor) {
-    return htmlspecialchars((string)$valor, ENT_QUOTES, 'UTF-8');
-}
+/* =========================================
+   OBTENER CATEGORIA SELECCIONADA
+========================================= */
 
-// OBTENER LAS CATEGORÍAS DISPONIBLES
-$categorias = [];
-
-foreach ($repuestos as $r) {
-    $categorias[$r['categoria']] = $r['categoria'];
-}
-
-// OBTENER LA CATEGORÍA SELECCIONADA
 $filtro = '';
 
-if (isset($_GET['categoria']) && is_string($_GET['categoria'])) {
+if (
+    isset($_GET['categoria']) &&
+    is_string($_GET['categoria'])
+) {
+
     $filtro = trim($_GET['categoria']);
+
 }
 
-// VALIDAR LA CATEGORÍA
-if ($filtro !== '' && !isset($categorias[$filtro])) {
+/* =========================================
+   VALIDAR CATEGORIA
+========================================= */
+
+if (
+    $filtro !== '' &&
+    !isset($categorias[$filtro])
+) {
+
     $filtro = '';
+
 }
 
-// FILTRAR LOS REPUESTOS
+/* =========================================
+   FILTRAR REPUESTOS
+========================================= */
+
 $productosFiltrados = [];
 
 foreach ($repuestos as $r) {
 
-    if ($filtro === '' || $r['categoria'] === $filtro) {
+    if (
+        $filtro === '' ||
+        $r['categoria'] === $filtro
+    ) {
+
         $productosFiltrados[] = $r;
+
     }
 
 }
@@ -80,73 +141,7 @@ foreach ($repuestos as $r) {
      NAVEGACIÓN
 ====================================== -->
 
-<nav class="navbar navbar-expand-lg navbar-dark navbar-donpancho">
-
-    <div class="container">
-
-        <a class="navbar-brand fw-bold" href="index.php">
-            DON <span>PANCHO</span>
-        </a>
-
-        <button class="navbar-toggler"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#menuPrincipal"
-                aria-controls="menuPrincipal"
-                aria-expanded="false"
-                aria-label="Mostrar menú">
-
-            <span class="navbar-toggler-icon"></span>
-
-        </button>
-
-        <div class="collapse navbar-collapse" id="menuPrincipal">
-
-            <ul class="navbar-nav ms-auto">
-
-                <li class="nav-item">
-                    <a class="nav-link" href="index.php">
-                        Repuestos
-                    </a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link active" href="catalogo.php">
-                        Catálogo
-                    </a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link" href="armar_kit.php">
-                        Arma Tu Kit
-                    </a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link" href="sucursales.php">
-                        Sucursales
-                    </a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link" href="facturas.php">
-                        Facturas
-                    </a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link" href="usuarios.php">
-                        Usuarios
-                    </a>
-                </li>
-
-            </ul>
-
-        </div>
-
-    </div>
-
-</nav>
+<?php include __DIR__ . '/navbar/navbar.php'; ?>
 
 
 <!-- =====================================

@@ -1,6 +1,10 @@
 <?php
     declare(strict_types=1);
 
+     if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+
     class ConexionBD {
         private string $host = "localhost";
         private string $name = "don_pancho";

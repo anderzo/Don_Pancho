@@ -17,7 +17,7 @@ function e($valor) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Inicio | Autopartes Don Pancho</title>
+    <title>Arma Tu Kit | Autopartes Don Pancho</title>
 
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
@@ -33,73 +33,7 @@ function e($valor) {
      NAVEGACIÓN
 ====================================== -->
 
-<nav class="navbar navbar-expand-lg navbar-dark navbar-donpancho">
-
-    <div class="container">
-
-        <a class="navbar-brand fw-bold" href="index.php">
-            DON <span>PANCHO</span>
-        </a>
-
-        <button class="navbar-toggler"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#menuPrincipal"
-                aria-controls="menuPrincipal"
-                aria-expanded="false"
-                aria-label="Mostrar menú">
-
-            <span class="navbar-toggler-icon"></span>
-
-        </button>
-
-        <div class="collapse navbar-collapse" id="menuPrincipal">
-
-            <ul class="navbar-nav ms-auto">
-
-                <li class="nav-item">
-                    <a class="nav-link" href="index.php">
-                        Repuestos
-                    </a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link" href="catalogo.php">
-                        Catálogo
-                    </a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link active" href="armar_kit.php">
-                        Arma Tu Kit
-                    </a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link" href="sucursales.php">
-                        Sucursales
-                    </a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link" href="facturas.php">
-                        Facturas
-                    </a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link" href="usuarios.php">
-                        Usuarios
-                    </a>
-                </li>
-
-            </ul>
-
-        </div>
-
-    </div>
-
-</nav>
+<?php include __DIR__ . '/navbar/navbar.php'; ?>
 
 
 <!-- =====================================
