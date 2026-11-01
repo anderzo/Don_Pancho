@@ -16,17 +16,66 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
         header("Location: crud_repuestos.php");
         exit;
     }
+
     if($accion === 'crear'){
-        $repo->insertar(
-            (int)($_POST['categoria_id']) ?? 0,
-            (string)($_POST['nombre'])?? '',
-            (string)($_POST['descripcion'])?? '',
-            (float)($_POST['precio'])?? 0,
-            (int)($_POST['stock'])?? 0,
-            (string)($_POST['fotografia'])?? '',
-            (string)($_POST['insignia'])?? '');
-        header("Location: crud_repuestos.php");
-        exit;
+
+        $archivo = $_FILES['fotografia'];
+
+        if($archivo['error'] !== UPLOAD_ERR_OK){
+            die("Error al recibir la fotografía. Código: " . $archivo['error']);
+        }
+
+        $maxBytes = 4 * 1024 * 1024;
+
+        if($archivo['size'] > $maxBytes){
+            die("Error: La fotografía supera los 4 MB.");
+        }
+
+        $extension = strtolower(pathinfo($archivo['name'], PATHINFO_EXTENSION));
+
+        $extensionesPermitidas = ['jpg', 'jpeg', 'png', 'webp'];
+
+        if(!in_array($extension, $extensionesPermitidas, true)){
+            die("Error: Extensión de imagen no permitida.");
+        }
+
+        $finfo = new finfo(FILEINFO_MIME_TYPE);
+        $mimeReal = $finfo->file($archivo['tmp_name']);
+
+        $mimesValidos = ['image/jpeg', 'image/png', 'image/webp'];
+
+        if(!in_array($mimeReal, $mimesValidos, true)){
+            die("Error: El archivo no es una imagen válida.");
+        }
+
+        $nuevoNombre = uniqid('prod_', true) . '.' . $extension;
+
+        $carpetaDestino = __DIR__ . '/../img/';
+
+        if(!is_dir($carpetaDestino)){
+            mkdir($carpetaDestino, 0755, true);
+        }
+
+        $rutaFinal = $carpetaDestino . $nuevoNombre;
+
+        if(move_uploaded_file($archivo['tmp_name'], $rutaFinal)){
+
+            $repo->insertar(
+                (int)($_POST['categoria_id'] ?? 0),
+                (string)($_POST['nombre'] ?? ''),
+                (string)($_POST['descripcion'] ?? ''),
+                (float)($_POST['precio'] ?? 0),
+                (int)($_POST['stock'] ?? 0),
+                $nuevoNombre,
+                (string)($_POST['insignia'] ?? '')
+            );
+
+            header("Location: crud_repuestos.php");
+            exit;
+
+        }else{
+            die("Error al guardar la fotografía.");
+        }
     }
     if($accion === 'actualizar'){
         $repo->actualizar(
@@ -48,111 +97,444 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lista Repuestos</title>
+    <title>Lista Repuestos | Don Pancho</title>
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+    <link rel="stylesheet" href="../css/Estilos.css">
 </head>
 <body>
-    <button type="button" id="btncrear">Insertar Producto</button>
-    <table border="1" cellpadding="6">
-        <tr>
-            <th>ID</th>
-            <th>Nombre</th>
-            <th>ID Categoria</th>
-            <th>Descripcion</th>
-            <th>Fotografia</th>
-            <th>Precio</th>
-            <th>Stock</th>
-            <th>Insignia</th>
-            <th>Accion</th>
-        </tr>
-        <?php foreach($repuestos as $p): ?>
-        <tr>
-            <td><?= ($p['id']) ?></td>
-            <td><?= ($p['nombre']) ?></td>
-            <td><?= ($p['categoria_id']) ?></td>
-            <td><?= ($p['descripcion']) ?></td>
-            <td><?= ($p['fotografia']) ?></td>
-            <td><?= ($p['precio']) ?></td>
-            <td><?= ($p['stock']) ?></td>
-            <td><?= ($p['insignia']) ?></td>
-            <td>
-                <form method="POST"  action="crud_repuestos.php" onsubmit="return confirm('Desea Eliminar el producto?');">
-                    <input type="hidden" name="action" value="eliminar">
-                    <input type="hidden" name="id" value="<?=$p['id']?>">
-                    <button type="submit">Eliminar</button>
-                </form>
-                <button 
-                    type="button"
-                    class="btnEditar"
-                    data-id="<?= $p['id'] ?>"
-                    data-precio="<?= $p['precio'] ?>"
-                    data-stock="<?= $p['stock'] ?>"
-                    data-insignia="<?= htmlspecialchars($p['insignia'], ENT_QUOTES, 'UTF-8') ?>"
-                >
-                    Editar
-                </button>
-            </td>
-        </tr>
-        <?php endforeach ?>
-    </table>
-    <dialog id="modalCrear">
-        <h2>Registrar Repuesto</h2>
-        <form method="POST" action="crud_repuestos.php">
-            <input type="hidden" name="action" value="crear">
-            <label>Nombre</label>
-            <input type="text" name="nombre"><br>
-            <label>Id Categoria</label>
-            <input type="number" name="categoria_id"><br>
-            <label>Descripcion</label>
-            <input type="text" name="descripcion"><br>
-            <label>Precio</label>
-            <input type="number" name="precio"><br>
-            <label>Stock</label>
-            <input type="number" name="stock"><br>
-            <label>Fotografia</label>
-            <input type="string" name="fotografia"><br>
-            <label>Insignia</label>
-            <select name="insignia" required>
-                <option value="Destacado">Destacado</option>
-                <option value="NoDestacado" selected>No Destacado</option>
-            </select>
-            <button type="submit">Guardar</button>
-            <button type="button" onclick="document.getElementById('modalCrear').close();"></button>
-        </form>
 
-    </dialog>
-    <dialog id="modalEditar">
-        <h2>Actualizar Repuesto</h2>
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-donpancho">
 
-        <form method="POST" action="crud_repuestos.php">
+        <div class="container">
 
-            <input type="hidden" name="action" value="actualizar">
-            <input type="hidden" name="id" id="editarId">
+            <a class="navbar-brand fw-bold" href="index.php">
+                DON <span>PANCHO</span>
+            </a>
 
-            <label>Precio</label>
-            <input type="number" name="precio" id="editarPrecio" min="0" required>
-            <br>
-
-            <label>Stock</label>
-            <input type="number" name="stock" id="editarStock" min="0" required>
-            <br>
-
-            <label>Insignia</label>
-            <select name="insignia" id="editarInsignia" required>
-                <option value="Destacado">Destacado</option>
-                <option value="NoDestacado" selected>No Destacado</option>
-            </select>
-            <br>
-
-            <button type="submit">Guardar Cambios</button>
-
-            <button type="button" onclick="document.getElementById('modalEditar').close();">
-                Cancelar
+            <button
+                class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#menuPrincipal"
+                aria-controls="menuPrincipal"
+                aria-expanded="false"
+                aria-label="Mostrar menú"
+            >
+                <span class="navbar-toggler-icon"></span>
             </button>
 
-        </form>
+            <div class="collapse navbar-collapse" id="menuPrincipal">
+
+                <ul class="navbar-nav ms-auto align-items-lg-center">
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.php">
+                            Inicio
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="catalogo.php">
+                            Catálogo
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="">
+                            Arma tu Kit
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="facturacion.php">
+                            Facturación SAR
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="sucursales.php">
+                            Sucursales
+                        </a>
+                    </li>
+
+                    <li class="nav-item ms-lg-3">
+                        <a class="nav-link active" href="crud_repuestos.php">
+                            Administrar repuestos
+                        </a>
+                    </li>
+
+                </ul>
+
+            </div>
+
+        </div>
+
+    </nav>
+
+    <header class="catalogo-header">
+
+        <div class="container">
+
+            <span class="subtitulo">
+                PANEL DE ADMINISTRACIÓN
+            </span>
+
+            <h1>
+                Gestión de repuestos
+            </h1>
+
+            <p>
+                Administra los productos registrados en Don Pancho.
+            </p>
+
+        </div>
+
+    </header>
+
+    <main class="container py-5">
+        <button type="button" id="btncrear" class="btn btn-vino mb-3">Insertar Producto</button>
+        
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+
+                    <table class="table table-hover table-striped align-middle mb-0">
+
+                        <thead class="table-dark">
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>ID Categoria</th>
+                                <th>Descripcion</th>
+                                <th>Fotografia</th>
+                                <th>Precio</th>
+                                <th>Stock</th>
+                                <th>Insignia</th>
+                                <th>Accion</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            <?php foreach($repuestos as $p): ?>
+
+                            <tr>
+                                <td><?= ($p['id']) ?></td>
+                                <td><?= ($p['nombre']) ?></td>
+                                <td><?= ($p['categoria_id']) ?></td>
+                                <td><?= ($p['descripcion']) ?></td>
+                                <td>
+                                    <img
+                                        src="../img/<?= htmlspecialchars($p['fotografia'], ENT_QUOTES, 'UTF-8') ?>"
+                                        width="100"
+                                        alt="Fotografía del producto"
+                                        class="rounded"
+                                    >
+                                </td>
+                                <td>L. <?= ($p['precio']) ?></td>
+                                <td><?= ($p['stock']) ?></td>
+                                <td><?= ($p['insignia']) ?></td>
+                                <td>
+                                    <form
+                                        method="POST"
+                                        action="crud_repuestos.php"
+                                        onsubmit="return confirm('Desea Eliminar el producto?');"
+                                        class="mb-2"
+                                    >
+                                        <input type="hidden" name="action" value="eliminar">
+                                        <input type="hidden" name="id" value="<?= $p['id'] ?>">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                                            Eliminar
+                                        </button>
+                                    </form>
+                                    <button
+                                        type="button"
+                                        class="btnEditar btn btn-sm btn-outline-primary"
+                                        data-id="<?= $p['id'] ?>"
+                                        data-precio="<?= $p['precio'] ?>"
+                                        data-stock="<?= $p['stock'] ?>"
+                                        data-insignia="<?= htmlspecialchars($p['insignia'], ENT_QUOTES, 'UTF-8') ?>"
+                                    >
+                                        Editar
+                                    </button>
+                                </td>
+                            </tr>
+                            <?php endforeach ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <dialog id="modalCrear">
+
+        <div>
+
+            <div class="modal-header">
+                <h2 class="modal-title">Registrar Repuesto</h2>
+            </div>
+
+            <form method="POST" action="crud_repuestos.php" enctype="multipart/form-data">
+
+                <input type="hidden" name="action" value="crear">
+
+                <div class="modal-body">
+
+                    <div class="mb-3">
+                        <label class="form-label">Nombre</label>
+                        <input type="text" name="nombre" class="form-control">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">ID Categoría</label>
+                        <input type="number" name="categoria_id" class="form-control">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Descripción</label>
+                        <input type="text" name="descripcion" class="form-control">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Precio</label>
+                        <input type="number" name="precio" class="form-control">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Stock</label>
+                        <input type="number" name="stock" class="form-control">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Fotografía</label>
+                        <input
+                            type="file"
+                            name="fotografia"
+                            class="form-control"
+                            accept="image/jpeg, image/png, image/webp"
+                            required
+                        >
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Insignia</label>
+
+                        <select name="insignia" class="form-select" required>
+                            <option value="Destacado">Destacado</option>
+                            <option value="NoDestacado" selected>No Destacado</option>
+                        </select>
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+
+                    <button type="submit" class="btn btn-vino">
+                        Guardar
+                    </button>
+
+                    <button
+                        type="button"
+                        class="btn btn-secondary"
+                        onclick="document.getElementById('modalCrear').close();"
+                    >
+                        Cancelar
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
     </dialog>
+
+    <dialog id="modalEditar">
+
+        <div>
+
+            <div class="modal-header">
+                <h2 class="modal-title">Actualizar Repuesto</h2>
+            </div>
+
+            <form method="POST" action="crud_repuestos.php">
+
+                <input type="hidden" name="action" value="actualizar">
+                <input type="hidden" name="id" id="editarId">
+
+                <div class="modal-body">
+
+                    <div class="mb-3">
+                        <label class="form-label">Precio</label>
+                        <input
+                            type="number"
+                            name="precio"
+                            id="editarPrecio"
+                            class="form-control"
+                            min="0"
+                            required
+                        >
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Stock</label>
+                        <input
+                            type="number"
+                            name="stock"
+                            id="editarStock"
+                            class="form-control"
+                            min="0"
+                            required
+                        >
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Insignia</label>
+
+                        <select
+                            name="insignia"
+                            id="editarInsignia"
+                            class="form-select"
+                            required
+                        >
+                            <option value="Destacado">Destacado</option>
+                            <option value="NoDestacado" selected>No Destacado</option>
+                        </select>
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+
+                    <button type="submit" class="btn btn-vino">
+                        Guardar Cambios
+                    </button>
+
+                    <button
+                        type="button"
+                        class="btn btn-secondary"
+                        onclick="document.getElementById('modalEditar').close();"
+                    >
+                        Cancelar
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </dialog>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
+<footer class="footer-donpancho">
+
+    <div class="container">
+
+        <div class="row g-4">
+
+            <div class="col-md-4">
+
+                <h4>
+                    DON <span>PANCHO</span>
+                </h4>
+
+                <p>
+                    Autopartes y Repuestos Don Pancho,
+                    expertos en repuestos genuinos y compatibles
+                    para vehículos japoneses, coreanos y americanos.
+                </p>
+
+            </div>
+
+            <div class="col-md-3">
+
+                <h5>
+                    Enlaces rápidos
+                </h5>
+
+                <ul class="footer-links">
+
+                    <li><a href="index.php">Inicio</a></li>
+                    <li><a href="catalogo.php">Catálogo</a></li>
+                    <li><a href="kit.php">Arma tu Kit</a></li>
+                    <li><a href="facturacion.php">Facturación SAR</a></li>
+                    <li><a href="sucursales.php">Sucursales</a></li>
+
+                </ul>
+
+            </div>
+
+            <div class="col-md-5">
+
+                <h5>
+                    Nuestras sucursales
+                </h5>
+
+                <ul class="footer-links">
+
+                    <li class="mb-2">
+                        <strong>Tegucigalpa:</strong>
+                        <br>
+                        Toncontín y Suyapa.
+                    </li>
+
+                    <li class="mb-2">
+                        <strong>San Pedro Sula:</strong>
+                        <br>
+                        Medina.
+                    </li>
+
+                    <li class="mb-2">
+                        <strong>La Ceiba:</strong>
+                        <br>
+                        Carretera CA-13.
+                    </li>
+
+                </ul>
+
+            </div>
+
+        </div>
+
+        <hr class="footer-divider">
+
+        <div class="text-center mb-3">
+
+            <h5>
+                Síguenos
+            </h5>
+
+            <div class="redes">
+
+                <a href="#" aria-label="Facebook">Facebook</a>
+                <a href="#" aria-label="Instagram">Instagram</a>
+                <a href="#" aria-label="WhatsApp">WhatsApp</a>
+
+            </div>
+
+        </div>
+
+        <div class="text-center">
+
+            <small>
+                &copy; <?= date('Y') ?> Don Pancho.
+                Todos los derechos reservados.
+            </small>
+
+        </div>
+
+    </div>
+
+</footer>
+
 </html>
+
 <script>
     const modalCrear = document.getElementById('modalCrear')
     document.getElementById('btncrear').addEventListener('click',()=>{
