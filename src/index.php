@@ -100,8 +100,8 @@ $marcas = ['Toyota', 'Nissan', 'Honda', 'Hyundai', 'Isuzu', 'Ford'];
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link" href="categorias.php">
-                        Categorías
+                    <a class="nav-link" href="armar_kit.php">
+                        Arma Tu Kit
                     </a>
                 </li>
 
@@ -404,7 +404,7 @@ $marcas = ['Toyota', 'Nissan', 'Honda', 'Hyundai', 'Isuzu', 'Ford'];
                 <ul class="footer-links">
                     <li><a href="index.php">Repuestos</a></li>
                     <li><a href="catalogo.php">Catálogo</a></li>
-                    <li><a href="categorias.php">Categorías</a></li>
+                    <li><a href="armar_kit.php">Arma Tu Kit</a></li>
                     <li><a href="sucursales.php">Sucursales</a></li>
                 </ul>
 

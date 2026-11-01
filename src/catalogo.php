@@ -117,8 +117,8 @@ foreach ($repuestos as $r) {
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link" href="categorias.php">
-                        Categorías
+                    <a class="nav-link" href="armar_kit.php">
+                        Arma Tu Kit
                     </a>
                 </li>
 
