@@ -3,6 +3,9 @@ session_start();
 
 require_once __DIR__ . '/conexiones/conexionPDO.php';
 
+$conexion = new ConexionBD();
+$pdo = $conexion->conectar();
+
 function e($valor) {
     return htmlspecialchars($valor ?? '', ENT_QUOTES, 'UTF-8');
 }
@@ -13,13 +16,6 @@ $sql = "SELECT id, nombre, direccion
 
 $stmt = $pdo->query($sql);
 $sucursales = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-$usuarioSesion = $_SESSION['usuario'] ?? $_SESSION['user'] ?? null;
-$logueado = !empty($usuarioSesion);
-
-$nombreUsuario = is_array($usuarioSesion)
-    ? ($usuarioSesion['nombre'] ?? $usuarioSesion['usuario'] ?? 'Usuario')
-    : $usuarioSesion;
 ?>
 
 <!DOCTYPE html>
@@ -36,61 +32,7 @@ $nombreUsuario = is_array($usuarioSesion)
 <body>
 
 <!-- NAVBAR -->
-<nav class="navbar navbar-expand-lg navbar-dark navbar-donpancho">
-    <div class="container">
-        <a class="navbar-brand fw-bold" href="index.php">
-            DON <span>PANCHO</span>
-        </a>
-
-        <button class="navbar-toggler" type="button"
-                data-bs-toggle="collapse" data-bs-target="#menuPrincipal">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <div class="collapse navbar-collapse" id="menuPrincipal">
-            <ul class="navbar-nav ms-auto align-items-lg-center">
-                <li class="nav-item">
-                    <a class="nav-link" href="index.php">Inicio</a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link" href="catalogo.php">Catálogo</a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link" href="kit.php">Arma tu Kit</a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link" href="facturacion.php">Facturación</a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link active" href="sucursales.php">Sucursales</a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link" href="historial.php">Historial</a>
-                </li>
-
-                <?php if ($logueado): ?>
-                    <li class="nav-item">
-                        <span class="nav-link">
-                            Hola, <?= e($nombreUsuario) ?>
-                        </span>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="logout.php">Cerrar sesión</a>
-                    </li>
-                <?php else: ?>
-                    <li class="nav-item">
-                        <a class="nav-link" href="login.php">Iniciar sesión</a>
-                    </li>
-                <?php endif; ?>
-            </ul>
-        </div>
-    </div>
-</nav>
+<?php include __DIR__ . '/navbar/navbar.php'; ?>
 
 <!-- ENCABEZADO -->
 <section class="catalogo-header">

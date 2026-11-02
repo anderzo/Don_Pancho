@@ -1,66 +1,14 @@
-
 <?php
 
-/* =========================================
-   INICIO DE SESION
-========================================= */
+$conexion = new ConexionBD();
+$pdo = $conexion->conectar();
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
 /* =========================================
-   CONEXION A LA BASE DE DATOS
-========================================= */
-
-require __DIR__ . '/conexiones/conexionPDO.php';
-
-/* =========================================
    FUNCION DE SEGURIDAD HTML
-========================================= */
-
-function e($valor) {
-    return htmlspecialchars(
-        (string)$valor,
-        ENT_QUOTES,
-        'UTF-8'
-    );
-}
-
-/* =========================================
-   CONSULTAR REPUESTOS
-========================================= */
-
-$repuestos = [];
-$categorias = [];
-$errorProductos = false;
-
-try {
-
-    $sql = "SELECT
-                r.id,
-                c.nombre AS categoria,
-                r.nombre,
-                r.descripcion,
-                r.precio,
-                r.stock,
-                r.insignia,
-                r.fotografia
-            FROM repuestos r
-            INNER JOIN categorias c
-                ON c.id = r.categoria_id
-            ORDER BY c.nombre ASC, r.nombre ASC";
-
-    $consulta = $pdo->query($sql);
-
-    $repuestos = $consulta->fetchAll(PDO::FETCH_ASSOC);
-
-    /* =====================================
-       OBTENER CATEGORIAS DISPONIBLES
-    ===================================== */
-
-    foreach ($repuestos as $r) {
-
         $categorias[$r['categoria']] = $r['categoria'];
 
     }
@@ -191,155 +139,7 @@ if (is_array($usuarioSesion)) {
      BARRA DE NAVEGACION
 ========================================= -->
 
-<nav class="navbar navbar-expand-lg navbar-dark navbar-donpancho">
-
-    <div class="container">
-
-        <!-- LOGOTIPO -->
-
-        <a class="navbar-brand fw-bold" href="index.php">
-
-            DON <span>PANCHO</span>
-
-        </a>
-
-
-        <!-- BOTON RESPONSIVE -->
-
-        <button
-            class="navbar-toggler"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#menuPrincipal"
-            aria-controls="menuPrincipal"
-            aria-expanded="false"
-            aria-label="Mostrar menú"
-        >
-
-            <span class="navbar-toggler-icon"></span>
-
-        </button>
-
-
-        <!-- OPCIONES DEL MENU -->
-
-        <div class="collapse navbar-collapse" id="menuPrincipal">
-
-            <ul class="navbar-nav ms-auto align-items-lg-center">
-
-                <li class="nav-item">
-
-                    <a class="nav-link" href="index.php">
-
-                        Inicio
-
-                    </a>
-
-                </li>
-
-
-                <li class="nav-item">
-
-                    <a class="nav-link active" href="catalogo.php">
-
-                        Catálogo
-
-                    </a>
-
-                </li>
-
-
-                <li class="nav-item">
-
-                    <a class="nav-link" href="kit.php">
-
-                        Arma tu Kit
-
-                    </a>
-
-                </li>
-
-
-                <li class="nav-item">
-
-                    <a class="nav-link" href="facturacion.php">
-
-                        Facturación SAR
-
-                    </a>
-
-                </li>
-
-
-                <li class="nav-item">
-
-                    <a class="nav-link" href="sucursales.php">
-
-                        Sucursales
-                    </a>
-
-                </li>
-
-                <li class="nav-item">
-
-                    <a class="nav-link" href="historial.php">
-                        Historial
-                    </a>
-                </li>
-
-
-                <!-- CONTROL DINAMICO DE SESION -->
-
-                <?php if ($logueado): ?>
-
-                    <li class="nav-item ms-lg-3">
-
-                        <span class="nav-link">
-
-                            <?= e($nombreUsuario) ?>
-
-                            <?php if (!empty($rolUsuario)): ?>
-
-                                (<?= e($rolUsuario) ?>)
-
-                            <?php endif; ?>
-
-                        </span>
-
-                    </li>
-
-
-                    <li class="nav-item">
-
-                        <a class="nav-link" href="logout.php">
-
-                            Cerrar sesión
-
-                        </a>
-
-                    </li>
-
-                <?php else: ?>
-
-                    <li class="nav-item ms-lg-3">
-
-                        <a class="nav-link" href="login.php">
-
-                            Iniciar sesión
-
-                        </a>
-
-                    </li>
-
-                <?php endif; ?>
-
-            </ul>
-
-        </div>
-
-    </div>
-
-</nav>
+<?php include __DIR__ . '/navbar/navbar.php'; ?>
 
 
 

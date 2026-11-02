@@ -3,9 +3,9 @@ session_start();
 
 require __DIR__ . '/conexiones/conexionPDO.php';
 
-/* =========================================
-   FUNCION PARA PROTEGER LA SALIDA HTML
-========================================= */
+$conexion = new ConexionBD();
+$pdo = $conexion->conectar();
+
 function e($valor) {
     return htmlspecialchars((string)$valor, ENT_QUOTES, 'UTF-8');
 }
@@ -101,6 +101,9 @@ if (is_array($usuarioSesion)) {
     $nombreUsuario = $usuarioSesion;
 }
 
+// MARCAS DE VEHÍCULOS
+$marcas = ['Toyota', 'Nissan', 'Honda', 'Hyundai', 'Isuzu', 'Ford'];
+
 ?>
 
 <!DOCTYPE html>
@@ -134,109 +137,7 @@ if (is_array($usuarioSesion)) {
      BARRA DE NAVEGACION
 ========================================= -->
 
-<nav class="navbar navbar-expand-lg navbar-dark navbar-donpancho">
-
-    <div class="container">
-
-        <a class="navbar-brand fw-bold" href="index.php">
-            DON <span>PANCHO</span>
-        </a>
-
-        <button
-            class="navbar-toggler"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#menuPrincipal"
-            aria-controls="menuPrincipal"
-            aria-expanded="false"
-            aria-label="Mostrar menú"
-        >
-            <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <div class="collapse navbar-collapse" id="menuPrincipal">
-
-            <ul class="navbar-nav ms-auto align-items-lg-center">
-
-                <li class="nav-item">
-                    <a class="nav-link active" href="index.php">
-                        Inicio
-                    </a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link" href="catalogo.php">
-                        Catálogo
-                    </a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link" href="kit.php">
-                        Arma tu Kit
-                    </a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link" href="facturacion.php">
-                        Facturación
-                    </a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link" href="sucursales.php">
-                        Sucursales
-                    </a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link" href="historial.php">
-                        Historial
-                    </a>
-                </li>
-
-                <?php if ($logueado): ?>
-
-                    <li class="nav-item ms-lg-3">
-
-                        <span class="nav-link">
-                            <?= e($nombreUsuario) ?>
-
-                            <?php if ($rolUsuario !== ''): ?>
-                                (<?= e($rolUsuario) ?>)
-                            <?php endif; ?>
-                        </span>
-
-                    </li>
-
-                    <li class="nav-item">
-
-                        <a class="nav-link"
-                           href="logout.php">
-                            Cerrar sesión
-                        </a>
-
-                    </li>
-
-                <?php else: ?>
-
-                    <li class="nav-item ms-lg-3">
-
-                        <a class="nav-link"
-                           href="login.php">
-                            Iniciar sesión
-                        </a>
-
-                    </li>
-
-                <?php endif; ?>
-
-            </ul>
-
-        </div>
-
-    </div>
-
-</nav>
+<?php include __DIR__ . '/navbar/navbar.php'; ?>
 
 
 <!-- =========================================
@@ -547,31 +448,10 @@ if (is_array($usuarioSesion)) {
                 </h5>
 
                 <ul class="footer-links">
-
-                    <li>
-                        <a href="index.php">Inicio</a>
-                    </li>
-
-                    <li>
-                        <a href="catalogo.php">Catálogo</a>
-                    </li>
-
-                    <li>
-                        <a href="kit.php">Arma tu Kit</a>
-                    </li>
-
-                    <li>
-                        <a href="facturacion.php">Facturación</a>
-                    </li>
-
-                    <li>
-                        <a href="sucursales.php">Sucursales</a>
-                    </li>
-
-                    <li>
-                        <a href="historial.php">Historial de compras</a>
-                    </li>
-
+                    <li><a href="index.php">Repuestos</a></li>
+                    <li><a href="catalogo.php">Catálogo</a></li>
+                    <li><a href="armar_kit.php">Arma Tu Kit</a></li>
+                    <li><a href="sucursales.php">Sucursales</a></li>
                 </ul>
 
             </div>

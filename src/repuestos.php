@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
-require __DIR__ . '/conexiones/conexionPDO.php';
+require_once __DIR__ . '/conexiones/conexionPDO.php';
+
 class Repuesto{
     private PDO $pdo;
     public function __construct(PDO $pdo){

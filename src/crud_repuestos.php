@@ -1,7 +1,21 @@
 <?php
 declare(strict_types=1);
-require __DIR__ . '/conexiones/conexionPDO.php';
+
+require_once __DIR__ . '/conexiones/conexionPDO.php';
 require_once __DIR__ . '/repuestos.php';
+
+$conexion = new ConexionBD();
+$pdo = $conexion->conectar();
+
+function e($valor) {
+    return htmlspecialchars((string)($valor ?? ''), ENT_QUOTES, 'UTF-8');
+}
+
+$rol = $_SESSION['usuario']['rol'] ?? null;
+if (!in_array($rol, ['admin', 'bodeguero'], true)) {
+    header('Location: login.php');
+    exit;
+}
 
 $repuestos=[];
 if($pdo !== null){
@@ -106,73 +120,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
 </head>
 <body>
 
-    <nav class="navbar navbar-expand-lg navbar-dark navbar-donpancho">
-
-        <div class="container">
-
-            <a class="navbar-brand fw-bold" href="index.php">
-                DON <span>PANCHO</span>
-            </a>
-
-            <button
-                class="navbar-toggler"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#menuPrincipal"
-                aria-controls="menuPrincipal"
-                aria-expanded="false"
-                aria-label="Mostrar menú"
-            >
-                <span class="navbar-toggler-icon"></span>
-            </button>
-
-            <div class="collapse navbar-collapse" id="menuPrincipal">
-
-                <ul class="navbar-nav ms-auto align-items-lg-center">
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="index.php">
-                            Inicio
-                        </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="catalogo.php">
-                            Catálogo
-                        </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="">
-                            Arma tu Kit
-                        </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="facturacion.php">
-                            Facturación SAR
-                        </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="sucursales.php">
-                            Sucursales
-                        </a>
-                    </li>
-
-                    <li class="nav-item ms-lg-3">
-                        <a class="nav-link active" href="crud_repuestos.php">
-                            Administrar repuestos
-                        </a>
-                    </li>
-
-                </ul>
-
-            </div>
-
-        </div>
-
-    </nav>
+    <?php include __DIR__ . '/navbar/navbar_admin.php'; ?>
 
     <header class="catalogo-header">
 
@@ -429,137 +377,138 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
         </div>
 
     </dialog>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-
-<footer class="footer-donpancho">
-
-    <div class="container">
-
-        <div class="row g-4">
-
-            <div class="col-md-4">
-
-                <h4>
-                    DON <span>PANCHO</span>
-                </h4>
-
-                <p>
-                    Autopartes y Repuestos Don Pancho,
-                    expertos en repuestos genuinos y compatibles
-                    para vehículos japoneses, coreanos y americanos.
-                </p>
-
-            </div>
-
-            <div class="col-md-3">
-
-                <h5>
-                    Enlaces rápidos
-                </h5>
-
-                <ul class="footer-links">
-
-                    <li><a href="index.php">Inicio</a></li>
-                    <li><a href="catalogo.php">Catálogo</a></li>
-                    <li><a href="kit.php">Arma tu Kit</a></li>
-                    <li><a href="facturacion.php">Facturación SAR</a></li>
-                    <li><a href="sucursales.php">Sucursales</a></li>
-
-                </ul>
-
-            </div>
-
-            <div class="col-md-5">
-
-                <h5>
-                    Nuestras sucursales
-                </h5>
-
-                <ul class="footer-links">
-
-                    <li class="mb-2">
-                        <strong>Tegucigalpa:</strong>
-                        <br>
-                        Toncontín y Suyapa.
-                    </li>
-
-                    <li class="mb-2">
+    
+    <footer class="footer-donpancho">
+        
+        <div class="container">
+            
+            <div class="row g-4">
+                
+                <div class="col-md-4">
+                    
+                    <h4>
+                        DON <span>PANCHO</span>
+                    </h4>
+                    
+                    <p>
+                        Autopartes y Repuestos Don Pancho,
+                        expertos en repuestos genuinos y compatibles
+                        para vehículos japoneses, coreanos y americanos.
+                    </p>
+                    
+                </div>
+                
+                <div class="col-md-3">
+                    
+                    <h5>
+                        Enlaces rápidos
+                    </h5>
+                    
+                    <ul class="footer-links">
+                        
+                        <li><a href="index.php">Inicio</a></li>
+                        <li><a href="catalogo.php">Catálogo</a></li>
+                        <li><a href="kit.php">Arma tu Kit</a></li>
+                        <li><a href="facturacion.php">Facturación SAR</a></li>
+                        <li><a href="sucursales.php">Sucursales</a></li>
+                        
+                    </ul>
+                    
+                </div>
+                
+                <div class="col-md-5">
+                    
+                    <h5>
+                        Nuestras sucursales
+                    </h5>
+                    
+                    <ul class="footer-links">
+                        
+                        <li class="mb-2">
+                            <strong>Tegucigalpa:</strong>
+                            <br>
+                            Toncontín y Suyapa.
+                        </li>
+                        
+                        <li class="mb-2">
                         <strong>San Pedro Sula:</strong>
                         <br>
                         Medina.
                     </li>
-
+                    
                     <li class="mb-2">
                         <strong>La Ceiba:</strong>
                         <br>
                         Carretera CA-13.
                     </li>
-
+                    
                 </ul>
-
+                
             </div>
-
+            
         </div>
-
+        
         <hr class="footer-divider">
-
+        
         <div class="text-center mb-3">
-
+            
             <h5>
                 Síguenos
             </h5>
-
+            
             <div class="redes">
 
                 <a href="#" aria-label="Facebook">Facebook</a>
                 <a href="#" aria-label="Instagram">Instagram</a>
                 <a href="#" aria-label="WhatsApp">WhatsApp</a>
-
+                
             </div>
 
         </div>
 
         <div class="text-center">
-
+            
             <small>
                 &copy; <?= date('Y') ?> Don Pancho.
                 Todos los derechos reservados.
             </small>
-
+            
         </div>
-
+        
     </div>
+    
+    </footer>
 
-</footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-</html>
+    <script>
+        const modalCrear = document.getElementById('modalCrear')
+        document.getElementById('btncrear').addEventListener('click',()=>{
+            modalCrear.showModal();
+        })
 
-<script>
-    const modalCrear = document.getElementById('modalCrear')
-    document.getElementById('btncrear').addEventListener('click',()=>{
-        modalCrear.showModal();
-    })
+        const modalEditar = document.getElementById('modalEditar');
 
-    const modalEditar = document.getElementById('modalEditar');
+        const botonesEditar = document.querySelectorAll('.btnEditar');
 
-    const botonesEditar = document.querySelectorAll('.btnEditar');
+        botonesEditar.forEach(boton => {
 
-    botonesEditar.forEach(boton => {
+            boton.addEventListener('click', () => {
 
-        boton.addEventListener('click', () => {
+                document.getElementById('editarId').value = boton.dataset.id;
 
-            document.getElementById('editarId').value = boton.dataset.id;
+                document.getElementById('editarPrecio').value = boton.dataset.precio;
 
-            document.getElementById('editarPrecio').value = boton.dataset.precio;
+                document.getElementById('editarStock').value = boton.dataset.stock;
 
-            document.getElementById('editarStock').value = boton.dataset.stock;
+                document.getElementById('editarInsignia').value = boton.dataset.insignia;
 
-            document.getElementById('editarInsignia').value = boton.dataset.insignia;
+                modalEditar.showModal();
 
-            modalEditar.showModal();
+            });
 
         });
+    </script>
 
-    });
-</script>
+</body>
+</html>
