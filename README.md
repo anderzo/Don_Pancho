@@ -33,7 +33,7 @@ Integrantes del Grupo
 
 ### Panel Administrativo y Bodega
 - Inicio y cierre de sesión.
-- Solo entran usuarios con rol **Admin**, **Bodega** o **Usuraio**. Si alguien intenta entrar sin permiso, lo manda a `login.php`.
+- Solo entran usuarios con rol **admin**, **bodeguero** o **usuario**. Si alguien intenta entrar sin permiso, lo manda a `login.php`.
 - El menú superior cambia: muestra **Iniciar Sesión** a los visitantes, o el nombre y rol del usuario con el botón **Cerrar Sesión**.
 - Control del inventario (crear, ver, editar y eliminar) todo con **ventanas emergentes (modales)**, sin cambiar de página:
   - Tabla de inventario
@@ -61,10 +61,10 @@ Integrantes del Grupo
 
 1. Instala **XAMPP** y abre el panel de control.
 2. Inicia los módulos **Apache** y **MySQL**.
-3. Copia la carpeta del proyecto dentro de `C:\xampp\`.
+3. Copia la carpeta del proyecto dentro de `C:\xampp\htdocs\`.
 4. Abre **phpMyAdmin**: http://localhost/phpmyadmin
 5. En phpMyAdmin, ve a la pestaña **Importar** y carga los archivos **en este orden**:
-   1. `bd.sql`: crea la base de datos `Don_Pancho`, las tablas y el usuario de la BD.
+   1. `bd.sql`: crea la base de datos `don_pancho`, las tablas y el usuario de la BD.
    2. `insert.sql`: agrega los datos de prueba.
 6. Abre el proyecto en el navegador
 7. Para probar, inicia sesión con un usuario de prueba (admin o bodeguero) y revisa el catálogo, repuestos, sucursales y facturación.
@@ -77,14 +77,9 @@ Integrantes del Grupo
 | Usuario | GrupoProgra |
 | Contraseña | PrograWeb123 |
 
-### Paso 5: Revisar la carpeta de fotos
-Verifica que exista la carpeta `img/` dentro del proyecto. Ahí se guardan las fotos de los repuestos.
-
 ---
 
 ## Credenciales para evaluar el sistema
-
-### Usuarios del sistema
 
 ### Usuarios de prueba
 
@@ -92,6 +87,7 @@ Verifica que exista la carpeta `img/` dentro del proyecto. Ahí se guardan las f
 |-----|---------|------------|
 | Admin | admin_donpancho | 123456 |
 | Bodeguero | bodega_sps | 123456 |
+
 ### Base de datos
 
 | Dato | Valor |
